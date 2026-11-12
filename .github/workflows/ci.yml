@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "7 */4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build et tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Tests
+        run: npm test
+      # Laisse le temps de voir la progression dans Isletick.
+      - name: Build (lent exprès)
+        run: sleep 150
+      # Un run sur trois échoue volontairement, pour montrer l'état « CI en échec ».
+      - name: Vérification de démo
+        run: |
+          if [ $(( ${{ github.run_number }} % 3 )) -eq 0 ]; then
+            echo "Échec volontaire de démonstration (run ${{ github.run_number }})."
+            exit 1
+          fi
+          echo "OK"

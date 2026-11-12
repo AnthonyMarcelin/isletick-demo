@@ -1,0 +1,25 @@
+name: Maintien de l'activité
+
+# GitHub désactive les workflows planifiés d'un dépôt public après 60 jours sans activité.
+# Un commit par semaine garde la CI planifiée active.
+on:
+  schedule:
+    - cron: "23 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - run: |
+          date -u +%Y-%m-%dT%H:%M:%SZ > .keepalive
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .keepalive
+          git commit -m "Maintien de l'activité" || exit 0
+          git push

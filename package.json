@@ -1,0 +1,1 @@
+{ "name": "isletick-demo", "private": true, "type": "module", "scripts": { "test": "node src/index.test.js" } }
